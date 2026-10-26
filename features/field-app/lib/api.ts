@@ -10,6 +10,26 @@ export const isLocalMode = !API_BASE;
 const hasPhotos = (r: RecordBase) =>
   Array.isArray(r.items) && r.items.some((i: { foto?: unknown }) => !!i.foto);
 
+/**
+ * El `detail` de un error del backend, en texto que el operario o soporte puedan leer:
+ * - reglas de negocio: {mensaje, errores: ["MOT-03: …", …]}
+ * - formato (FastAPI): [{loc: ["body", "turno"], msg: "Field required"}, …]
+ */
+function describeDetail(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((e: { loc?: unknown[]; msg?: string }) => `${(e.loc ?? []).filter((x) => x !== "body").join(".")}: ${e.msg ?? ""}`)
+      .join(" · ");
+  }
+  if (detail && typeof detail === "object") {
+    const d = detail as { mensaje?: string; errores?: string[] };
+    if (Array.isArray(d.errores) && d.errores.length) return d.errores.join(" · ");
+    if (d.mensaje) return d.mensaje;
+  }
+  return JSON.stringify(detail ?? "");
+}
+
 /** Un envío que supera el timeout cuenta como fallo reintentable (status 0), igual que una caída de red. */
 export async function sendRecord(record: RecordBase, initData: string): Promise<SendResult> {
   if (isLocalMode) {
@@ -33,7 +53,7 @@ export async function sendRecord(record: RecordBase, initData: string): Promise<
     if (r.ok) return { ok: true, status: r.status, retryable: false, data: await r.json() };
     let detail = "";
     try {
-      detail = JSON.stringify((await r.json()).detail).slice(0, 180);
+      detail = describeDetail((await r.json()).detail).slice(0, 600);
     } catch {
       /* cuerpo sin JSON */
     }

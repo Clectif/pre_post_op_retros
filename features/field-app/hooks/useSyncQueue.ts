@@ -96,9 +96,9 @@ export function useSyncQueue(operator: Operator, initData: string) {
           }
           if (!r.retryable) {
             rec.rechazado = true;
-            rec.ultimo_error = `HTTP ${r.status} ${r.detail || ""}`;
+            rec.ultimo_error = `HTTP ${r.status}${r.detail ? ` — ${r.detail}` : ""}`;
             await updateInQueue(rec);
-            toast("Un registro fue rechazado por el servidor. Revíselo con soporte.");
+            toast("Un registro fue rechazado por el servidor. Vea el motivo en Estado de la tablet.");
             continue;
           }
           await updateInQueue(rec);
@@ -143,11 +143,36 @@ export function useSyncQueue(operator: Operator, initData: string) {
     [flush, refreshPending],
   );
 
+  /**
+   * Un rechazo no se reintenta solo (repetirlo daría el mismo error). Si la causa ya se
+   * corrigió en el servidor (catálogo, máquina, horómetro), se vuelve a poner en la cola.
+   */
+  const retryRejected = useCallback(
+    async (id: string) => {
+      const rec = (await readQueue()).find((x) => x.client_uuid === id);
+      if (!rec) return;
+      rec.rechazado = false;
+      await updateInQueue(rec);
+      await refreshPending();
+      await flush({ force: true });
+    },
+    [flush, refreshPending],
+  );
+
+  /** Saca de la tablet un registro rechazado que no tiene arreglo. No se puede deshacer. */
+  const discardRejected = useCallback(
+    async (id: string) => {
+      await removeFromQueue(id);
+      await refreshPending();
+    },
+    [refreshPending],
+  );
+
   // reintento periódico (respeta la espera tras fallos)
   useEffect(() => {
     const id = setInterval(() => void flush(), SYNC_INTERVAL_MS);
     return () => clearInterval(id);
   }, [flush]);
 
-  return { status, pending, submit, flush, refreshPending };
+  return { status, pending, submit, flush, refreshPending, retryRejected, discardRejected };
 }

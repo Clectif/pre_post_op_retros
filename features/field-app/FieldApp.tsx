@@ -38,7 +38,7 @@ export default function FieldApp() {
 function FieldShell() {
   const toast = useToast();
   const { operator, initData, haptic } = useTelegram();
-  const gps = useGeolocation();
+  const { gps, issue: gpsIssue } = useGeolocation();
   const { catalog, load: loadCatalog } = useCatalog(initData);
   const sessionCtl = useSession(catalog);
   const { session, ...sessionActions } = sessionCtl;
@@ -182,6 +182,8 @@ function FieldShell() {
           session={session}
           catalog={catalog}
           operator={operator}
+          gps={gps}
+          gpsIssue={gpsIssue}
           onSubmit={submitInspection}
           onBack={() => setSummaryOpen(false)}
         />
@@ -192,6 +194,9 @@ function FieldShell() {
           diagnostics={diagnostics}
           catalog={catalog}
           gps={gps}
+          gpsIssue={gpsIssue}
+          onRetry={sync.retryRejected}
+          onDiscard={sync.discardRejected}
           onClose={() => setDiagnosticsOpen(false)}
           onSync={async () => {
             setDiagnosticsOpen(false);

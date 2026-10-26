@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useToast } from "../../hooks/useToast";
 import { VERDICT_TEXT, type InspectionView } from "../../lib/inspection";
 import { cn } from "../../lib/utils";
-import type { Catalog, InspectionState, Operator, Session } from "../../types";
+import type { Catalog, Gps, InspectionState, Operator, Session } from "../../types";
 import { VERDICT_STYLES } from "../inspection/verdict";
 import { Button } from "../ui/Button";
 import { TextArea } from "../ui/fields";
@@ -24,12 +24,15 @@ interface SummaryModalProps {
   session: Session;
   catalog: Catalog;
   operator: Operator;
+  gps: Gps | null;
+  /** Por qué no hay GPS (ver useGeolocation); null si se está buscando. */
+  gpsIssue: string | null;
   /** Se invoca con las observaciones y la firma; el modal queda bloqueado hasta que termine. */
   onSubmit: (data: { observations: string; signature: string }) => Promise<void>;
   onBack: () => void;
 }
 
-export function SummaryModal({ state, view, session, catalog, operator, onSubmit, onBack }: SummaryModalProps) {
+export function SummaryModal({ state, view, session, catalog, operator, gps, gpsIssue, onSubmit, onBack }: SummaryModalProps) {
   const toast = useToast();
   const pad = useRef<SignaturePadHandle>(null);
   const [observations, setObservations] = useState("");
@@ -79,6 +82,14 @@ export function SummaryModal({ state, view, session, catalog, operator, onSubmit
           />
         )}
       </div>
+
+      {!gps && (
+        // no bloquea: en el frente puede no haber señal y la inspección igual tiene que salir
+        <div className="mt-2 rounded-xl border border-warn-line bg-warn-soft px-3 py-2 text-[11.5px] leading-[1.4] font-medium text-warn-ink">
+          ⚠ Sin ubicación GPS: la inspección se enviará sin posición y no aparecerá en el mapa.{" "}
+          {gpsIssue ?? "Buscando señal…"}
+        </div>
+      )}
 
       <ul className="mt-1.5 list-disc pl-[18px] text-xs leading-normal text-bad-ink short:max-h-14 short:overflow-auto">
         {failures.map((i) => (
