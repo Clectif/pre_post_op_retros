@@ -13,23 +13,24 @@ interface InspectionPanelProps {
   onOpenReading: (reading: ReadingDef) => void;
 }
 
-/** Panel derecho: las lecturas o los ítems de la sección activa. */
+/** Panel de la sección activa (sus lecturas o sus ítems). La posición la decide StageLayout. */
 export function InspectionPanel({ state, view, now, onMark, onOpenFailure, onOpenReading }: InspectionPanelProps) {
   const section = view.sections.find((s) => s.id === view.currentSec);
   const isReadings = view.currentSec === "LEC";
   const warnings = isReadings ? inspectionWarnings(state, now) : [];
 
   return (
-    <div className="absolute top-[calc(50%-42px)] right-4 flex max-h-[calc(100%-98px)] w-[430px] -translate-y-1/2 flex-col rounded-[22px] border border-line bg-panel shadow-card max-[1180px]:w-[360px]">
-      <div className="border-b border-line px-[18px] pt-3.5 pb-2.5">
+    <div className="flex min-h-0 flex-col rounded-[22px] border border-line bg-panel shadow-card max-lg:flex-1 lg:w-[430px] lg:max-[1180px]:w-[360px]">
+      {/* apilado y con poca altura, el chip elegido ya nombra la sección: el encabezado se cede a los ítems */}
+      <div className="border-b border-line px-[18px] pt-3.5 pb-2.5 max-sm:px-3.5 max-sm:pt-3 max-sm:pb-2 max-lg:short:hidden">
         <div className="text-[11px] font-semibold tracking-[.16em] text-accent uppercase">
           {state.fase === "pre" ? "Preoperacional" : "Postoperacional"}
         </div>
-        <h2 className="mt-[5px] text-[19px] font-semibold tracking-[-.01em]">{section?.nombre ?? "—"}</h2>
+        <h2 className="mt-[5px] text-[19px] font-semibold tracking-[-.01em] max-sm:text-[17px]">{section?.nombre ?? "—"}</h2>
         <p className="mt-1 text-xs leading-[1.35] text-muted">{section?.desc}</p>
       </div>
 
-      <div className="flex-1 overflow-auto px-3 pt-2 pb-3 [-webkit-overflow-scrolling:touch]">
+      <div className="min-h-0 flex-1 overflow-auto px-3 pt-2 pb-3 [-webkit-overflow-scrolling:touch] max-sm:px-2">
         {isReadings ? (
           <>
             {view.readings.map((l) => (

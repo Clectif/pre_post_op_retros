@@ -9,6 +9,7 @@ import { FailureModal } from "../modals/FailureModal";
 import { KeypadModal } from "../modals/KeypadModal";
 import { CameraTools } from "../ui/CameraTools";
 import { SceneHost } from "../ui/SceneHost";
+import { StageLayout } from "../layout/StageLayout";
 import { BottomBar } from "./BottomBar";
 import { InspectionPanel } from "./InspectionPanel";
 import { SectionRail } from "./SectionRail";
@@ -57,27 +58,29 @@ export function InspectionView({ inspection, onRequestSend, haptic }: Inspection
 
   return (
     <>
-      <SceneHost hostRef={hostRef} />
-
-      <div className="pointer-events-none absolute inset-0 z-[2] *:pointer-events-auto">
-        <SectionRail view={view} onSelect={inspection.selectSection} />
-        <InspectionPanel
-          state={state}
-          view={view}
-          now={now}
-          onMark={handleMark}
-          onOpenFailure={setFailureItem}
-          onOpenReading={setReadingOpen}
-        />
-        <BottomBar view={view} weekly={state.fase === "pre" && state.semanal} onSend={onRequestSend} />
-        <CameraTools
-          className="bottom-[86px]"
-          onZoomIn={() => sceneRef.current?.zoom(0.88)}
-          onZoomOut={() => sceneRef.current?.zoom(1.13)}
-          onReset={() => sceneRef.current?.reset()}
-          onNote={() => toast("La nota acompaña a los registros de extracción.")}
-        />
-      </div>
+      <StageLayout
+        scene={<SceneHost hostRef={hostRef} />}
+        tools={
+          <CameraTools
+            onZoomIn={() => sceneRef.current?.zoom(0.88)}
+            onZoomOut={() => sceneRef.current?.zoom(1.13)}
+            onReset={() => sceneRef.current?.reset()}
+            onNote={() => toast("La nota acompaña a los registros de extracción.")}
+          />
+        }
+        rail={<SectionRail view={view} onSelect={inspection.selectSection} />}
+        panel={
+          <InspectionPanel
+            state={state}
+            view={view}
+            now={now}
+            onMark={handleMark}
+            onOpenFailure={setFailureItem}
+            onOpenReading={setReadingOpen}
+          />
+        }
+        bar={<BottomBar view={view} weekly={state.fase === "pre" && state.semanal} onSend={onRequestSend} />}
+      />
 
       {failureItem && (
         <FailureModal

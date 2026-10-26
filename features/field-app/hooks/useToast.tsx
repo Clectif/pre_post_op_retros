@@ -33,7 +33,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className={`pointer-events-none fixed bottom-[120px] left-1/2 z-30 max-w-[min(80%,560px)] -translate-x-1/2 rounded-2xl px-5 py-3 text-center text-[13.5px] leading-[1.35] font-medium text-white shadow-modal transition-[opacity,translate] duration-200 ${
+        className={`pointer-events-none fixed bottom-[120px] left-1/2 z-30 max-w-[min(80%,560px)] max-sm:bottom-[150px] max-sm:w-max max-sm:max-w-[calc(100%-24px)] -translate-x-1/2 rounded-2xl px-5 py-3 text-center text-[13.5px] leading-[1.35] font-medium text-white shadow-modal transition-[opacity,translate] duration-200 ${
           // los avisos que empiezan por ⚠ son fallos de guardado: van en rojo para no confundirse con una confirmación
           toast.message.startsWith("⚠") ? "bg-bad-ink" : "bg-ink"
         } ${toast.visible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}

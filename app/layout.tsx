@@ -12,6 +12,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  // al abrir el teclado en pantalla (Android) el layout se encoge en vez de quedar tapado
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

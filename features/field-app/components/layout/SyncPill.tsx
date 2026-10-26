@@ -32,6 +32,8 @@ export function SyncPill({ status, pending, onClick }: SyncPillProps) {
     <button
       type="button"
       onClick={onClick}
+      aria-label={label}
+      title={label}
       className={cn(
         "flex min-h-[50px] cursor-pointer items-center gap-2 rounded-[14px] border px-4 text-[13px] font-semibold whitespace-nowrap tabular-nums shadow-pill",
         "max-[1340px]:min-h-[46px] max-[1340px]:min-w-[58px] max-[1340px]:justify-center max-[1340px]:px-3 max-[1340px]:text-[12.5px]",
@@ -40,7 +42,15 @@ export function SyncPill({ status, pending, onClick }: SyncPillProps) {
       )}
     >
       <span className={cn("size-[9px] shrink-0 rounded-full", s.dot)} />
-      {label}
+      {/* en teléfono solo el punto de color (y el número de pendientes, si los hay) */}
+      {status === "cola" ? (
+        <span>
+          <span className="max-sm:hidden phone-h:hidden">Pendientes: </span>
+          {pending}
+        </span>
+      ) : (
+        <span className="max-sm:hidden phone-h:hidden">{label}</span>
+      )}
     </button>
   );
 }

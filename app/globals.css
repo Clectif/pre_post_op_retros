@@ -58,6 +58,8 @@
 
 /* Pantallas bajas (tablet en horizontal con barra del navegador): modales y paneles más compactos. */
 @custom-variant short (@media (max-height: 700px));
+/* Teléfono acostado: tan poca altura que la barra superior no puede gastar dos filas. */
+@custom-variant phone-h (@media (orientation: landscape) and (max-height: 500px));
 
 html,
 body {

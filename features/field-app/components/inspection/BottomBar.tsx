@@ -14,11 +14,15 @@ export function BottomBar({ view, weekly, onSend }: BottomBarProps) {
   const verdict = view.verdict;
   const complete = total > 0 && done >= total;
   return (
-    <div className="absolute inset-x-0 bottom-0 flex items-center gap-4 border-t border-line bg-white/90 px-[18px] py-[11px] backdrop-blur-[8px]">
-      <div className="flex flex-1 flex-col gap-1.5">
-        <div className="flex justify-between text-[11.5px] text-muted">
-          <span>Avance de la inspección{weekly ? " · incluye revisión semanal" : ""}</span>
-          <span className="tabular-nums">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-t border-line bg-white/90 px-[18px] py-[11px] backdrop-blur-[8px] max-sm:gap-x-2.5 max-sm:px-3 phone-h:py-2">
+      {/* en teléfono el avance ocupa su propia fila y veredicto + botón van debajo */}
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 max-sm:basis-full">
+        <div className="flex justify-between gap-3 text-[11.5px] text-muted">
+          <span className="min-w-0 truncate">
+            Avance<span className="max-sm:hidden"> de la inspección</span>
+            {weekly ? " · incluye revisión semanal" : ""}
+          </span>
+          <span className="shrink-0 tabular-nums">
             <b className="font-semibold text-ink">{done}</b> / <span>{total}</span>
             {total > 0 && (
               <span className={cn("ml-2 font-semibold", complete ? "text-ok-ink" : "text-ink")}>
@@ -41,7 +45,7 @@ export function BottomBar({ view, weekly, onSend }: BottomBarProps) {
         type="button"
         disabled={done < total || total === 0}
         onClick={onSend}
-        className="min-h-[52px] cursor-pointer rounded-[14px] bg-accent px-[30px] text-sm font-bold text-white shadow-primary disabled:bg-line disabled:text-muted disabled:shadow-none"
+        className="min-h-[52px] cursor-pointer rounded-[14px] bg-accent px-[30px] text-sm font-bold whitespace-nowrap text-white shadow-primary disabled:bg-line disabled:text-muted disabled:shadow-none max-sm:flex-1 max-sm:px-4"
       >
         Firmar y enviar
       </button>

@@ -11,7 +11,7 @@ import {
 } from "./textures";
 import type { SceneController } from "./types";
 
-const PAN_PANEL = 3.2; // el panel derecho tapa ~175 px: se compensa la mirada
+const PAN_PANEL = 3.2; // el panel derecho flotante tapa ~175 px: se compensa la mirada
 const PARTICLES = 200;
 const N = STAGES.length;
 const hex = (css: string) => new THREE.Color(css).getHex();
@@ -38,6 +38,8 @@ export class ExtractionScene implements SceneController {
   private selected: number;
   private camX: number;
   private camZ = 19;
+  /** Desplazamiento lateral de la mirada: PAN_PANEL si el panel flota sobre la escena, 0 si va aparte. */
+  private pan = PAN_PANEL;
   /** El operario movió la escena a mano: la cámara deja de seguir al material elegido. */
   private free = false;
 
@@ -63,7 +65,7 @@ export class ExtractionScene implements SceneController {
 
   constructor(selected: number) {
     this.selected = selected;
-    this.camX = STAGES[selected].x + PAN_PANEL;
+    this.camX = STAGES[selected].x + this.pan;
     this.applyCamera();
     this.build();
   }
@@ -211,6 +213,11 @@ export class ExtractionScene implements SceneController {
     this.applyCamera();
   }
 
+  /** La vista avisa si el panel flota encima (pantalla ancha) o va al lado/debajo (apilado). */
+  setPanelOverScene(over: boolean) {
+    this.pan = over ? PAN_PANEL : 0;
+  }
+
   animate(dt: number) {
     STAGES.forEach((_, i) => {
       const target = i === this.selected ? 1 : 0;
@@ -222,7 +229,7 @@ export class ExtractionScene implements SceneController {
 
     if (!this.free) {
       // si el operario movió la escena, la cámara no se la roba
-      const goal = STAGES[this.selected].x + PAN_PANEL;
+      const goal = STAGES[this.selected].x + this.pan;
       if (Math.abs(goal - this.camX) > 0.005) {
         this.camX += (goal - this.camX) * 0.12;
         this.applyCamera();
@@ -300,7 +307,7 @@ export class ExtractionScene implements SceneController {
       // arrastre lateral: recorrer la fila de materiales
       this.moved = true;
       const r = this.canvas!.getBoundingClientRect();
-      const unitsPerPx = (2 * this.camZ * Math.tan((21 * Math.PI) / 180) * (r.width / r.height)) / r.width;
+      const unitsPerPx = (2 * this.camZ * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * (r.width / r.height)) / r.width;
       this.camX = this.camX0 - (e.clientX - this.panX0) * unitsPerPx;
       this.free = true;
       this.applyCamera();

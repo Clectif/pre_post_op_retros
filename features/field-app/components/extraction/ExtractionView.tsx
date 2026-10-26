@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { STAGES } from "../../data/stages";
 import type { ExtractionController } from "../../hooks/useExtraction";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useToast } from "../../hooks/useToast";
 import type { useSyncQueue } from "../../hooks/useSyncQueue";
 import { pointInPolygon } from "../../lib/geo";
@@ -11,6 +12,7 @@ import type { Gps, Operator, Session } from "../../types";
 import { NoteModal } from "../modals/NoteModal";
 import { CameraTools } from "../ui/CameraTools";
 import { SceneHost } from "../ui/SceneHost";
+import { OVERLAY_QUERY, StageLayout } from "../layout/StageLayout";
 import { ExtractionPanel } from "./ExtractionPanel";
 import { MaterialBar } from "./MaterialBar";
 
@@ -51,6 +53,12 @@ export function ExtractionView({ extraction, session, operator, gps, sync, hapti
     if (sceneRef.current) sceneRef.current.onPick = select;
   });
 
+  // el panel solo tapa la escena cuando flota encima (lg+); apilado, la cámara mira al centro
+  const panelOverScene = useMediaQuery(OVERLAY_QUERY);
+  useEffect(() => {
+    sceneRef.current?.setPanelOverScene(panelOverScene);
+  }, [panelOverScene, sceneRef]);
+
   const addBuckets = (n: number) => {
     extraction.addBuckets(n);
     if (n > 0) sceneRef.current?.emit(n === 1 ? 6 : 10);
@@ -84,29 +92,32 @@ export function ExtractionView({ extraction, session, operator, gps, sync, hapti
 
   return (
     <>
-      <SceneHost hostRef={hostRef} />
-
-      <div className="pointer-events-none absolute inset-0 z-[2] *:pointer-events-auto">
-        <ExtractionPanel
-          stage={stage}
-          buckets={state.baldes}
-          bucketCapacity={capacity}
-          lastRegistered={lastRegistered}
-          registering={registering}
-          onIncrement={() => addBuckets(1)}
-          onDecrement={() => addBuckets(-1)}
-          onQuickAdd={(n) => (n === 0 ? extraction.clearBuckets() : addBuckets(n))}
-          onRegister={register}
-        />
-        <MaterialBar selected={state.sel} onSelect={select} />
-        <CameraTools
-          className="bottom-24"
-          onZoomIn={() => sceneRef.current?.zoom(0.88)}
-          onZoomOut={() => sceneRef.current?.zoom(1.13)}
-          onReset={() => sceneRef.current?.reset()}
-          onNote={() => setNoteOpen(true)}
-        />
-      </div>
+      <StageLayout
+        panelFit
+        scene={<SceneHost hostRef={hostRef} />}
+        tools={
+          <CameraTools
+            onZoomIn={() => sceneRef.current?.zoom(0.88)}
+            onZoomOut={() => sceneRef.current?.zoom(1.13)}
+            onReset={() => sceneRef.current?.reset()}
+            onNote={() => setNoteOpen(true)}
+          />
+        }
+        panel={
+          <ExtractionPanel
+            stage={stage}
+            buckets={state.baldes}
+            bucketCapacity={capacity}
+            lastRegistered={lastRegistered}
+            registering={registering}
+            onIncrement={() => addBuckets(1)}
+            onDecrement={() => addBuckets(-1)}
+            onQuickAdd={(n) => (n === 0 ? extraction.clearBuckets() : addBuckets(n))}
+            onRegister={register}
+          />
+        }
+        bar={<MaterialBar selected={state.sel} onSelect={select} />}
+      />
 
       {noteOpen && (
         <NoteModal

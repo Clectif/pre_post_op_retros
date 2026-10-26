@@ -35,6 +35,7 @@ Reglas de la arquitectura:
 - **Un solo renderer WebGL vivo**: al cambiar de pestaña se libera el anterior (`useScene` hace `forceContextLoss`).
 - El estado de inspección y extracción vive en `FieldApp`, así que sobrevive al cambio de pestaña.
 - Colores y sombras están en `@theme` de `app/globals.css` (`bg-panel`, `text-muted`, `shadow-card`…); `short:` es la variante para pantallas de menos de 700 px de alto.
+- **Responsive:** `components/layout/StageLayout.tsx` reparte escena, rail, panel y barra. Desde `lg` (1024 px, tablet acostada) los paneles flotan sobre la escena; por debajo se apilan (vertical) o van en columna a la derecha (teléfono acostado). Los paneles no se posicionan solos: solo definen su ancho en `lg:`. `useScene` abre el FOV si el lienzo es más angosto que 1.4:1.
 
 ## Dependencias
 

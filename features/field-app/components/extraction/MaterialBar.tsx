@@ -4,7 +4,7 @@ import { cn } from "../../lib/utils";
 /** Barra inferior para elegir el material (granulometría). Se desplaza horizontalmente. */
 export function MaterialBar({ selected, onSelect }: { selected: number; onSelect: (i: number) => void }) {
   return (
-    <div className="absolute inset-x-0 bottom-0 flex gap-2 overflow-x-auto border-t border-line bg-white/90 px-4 pt-2.5 pb-3.5 backdrop-blur-[8px]">
+    <div className="flex gap-2 overflow-x-auto border-t border-line bg-white/90 px-4 pt-2.5 pb-3.5 backdrop-blur-[8px] [-webkit-overflow-scrolling:touch] max-sm:px-3 max-sm:pb-3 phone-h:py-2">
       {STAGES.map((st, i) => {
         const on = i === selected;
         return (
@@ -13,7 +13,7 @@ export function MaterialBar({ selected, onSelect }: { selected: number; onSelect
             type="button"
             onClick={() => onSelect(i)}
             className={cn(
-              "flex min-h-[68px] flex-[1_0_124px] cursor-pointer flex-col items-center justify-center gap-[3px] rounded-2xl border px-2 py-1.5",
+              "flex min-h-[68px] flex-[1_0_124px] cursor-pointer max-sm:min-h-[60px] max-sm:flex-[1_0_104px] phone-h:min-h-14 flex-col items-center justify-center gap-[3px] rounded-2xl border px-2 py-1.5",
               on ? "border-accent bg-accent-soft ring-3 ring-accent/15" : "border-line bg-field active:bg-subtle",
             )}
           >

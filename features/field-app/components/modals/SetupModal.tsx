@@ -99,7 +99,8 @@ export function SetupModal({ catalog, session, actions, gps, onStart, onClose }:
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4 max-[860px]:grid-cols-1">
+      {/* 3 columnas en tablet acostada, 2 en tablet de pie, 1 en teléfono */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 min-[900px]:grid-cols-3">
         <div>
           <ModalLabel className="mt-1">Máquina</ModalLabel>
           <OptionList className={LIST} options={machines} value={session.maq.id} onPick={actions.setMachine} />
@@ -110,7 +111,7 @@ export function SetupModal({ catalog, session, actions, gps, onStart, onClose }:
           <ModalLabel>Zona de trabajo</ModalLabel>
           <OptionList options={operativeZones} value={session.zona} onPick={actions.setOperativeZone} />
         </div>
-        <div>
+        <div className="sm:max-[900px]:col-span-2">
           <ModalLabel className="mt-1">Título minero</ModalLabel>
           <OptionList className={LIST} options={titles} value={session.titulo.id} onPick={actions.setTitle} />
           <ModalLabel>Frente de extracción</ModalLabel>

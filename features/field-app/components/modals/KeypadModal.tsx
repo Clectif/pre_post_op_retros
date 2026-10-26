@@ -49,7 +49,7 @@ export function KeypadModal({ reading: l, current, validate, onSave, onCancel }:
       </ModalSub>
       <div
         className={cn(
-          "mt-2 mb-1.5 rounded-2xl border py-2 text-center text-[40px] leading-[1.2] font-semibold tabular-nums",
+          "mt-2 mb-1.5 rounded-2xl border py-2 text-center text-[40px] leading-[1.2] font-semibold tabular-nums short:py-1 short:text-[32px]",
           error ? "border-bad-line bg-bad-soft text-bad-ink" : "border-line bg-subtle text-accent",
         )}
       >
@@ -63,7 +63,7 @@ export function KeypadModal({ reading: l, current, validate, onSave, onCancel }:
             key={k}
             type="button"
             onClick={() => press(k)}
-            className="cursor-pointer rounded-[14px] border border-line bg-field py-4 text-[21px] font-semibold active:border-accent-line active:bg-accent-soft active:text-accent"
+            className="cursor-pointer rounded-[14px] border border-line bg-field py-4 text-[21px] font-semibold active:border-accent-line active:bg-accent-soft active:text-accent short:py-3"
           >
             {k}
           </button>

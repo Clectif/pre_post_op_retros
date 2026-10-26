@@ -2,6 +2,20 @@ import { useEffect, useRef, type RefObject } from "react";
 import * as THREE from "three";
 import type { SceneController } from "./types";
 
+/** Las escenas se encuadraron para un lienzo apaisado; más angosto que esto, se abre el ángulo. */
+const MIN_ASPECT = 1.4;
+const MAX_FOV = 80;
+
+/**
+ * FOV vertical que conserva el ancho visible de MIN_ASPECT cuando el lienzo es más angosto
+ * (tablet de pie, teléfono): la máquina no se sale por los lados.
+ */
+function fitFov(baseFov: number, aspect: number): number {
+  if (aspect >= MIN_ASPECT) return baseFov;
+  const half = Math.atan((Math.tan(THREE.MathUtils.degToRad(baseFov) / 2) * MIN_ASPECT) / aspect);
+  return Math.min(MAX_FOV, THREE.MathUtils.radToDeg(2 * half));
+}
+
 /**
  * Presta un renderer WebGL a una escena: crea el canvas dentro de `hostRef`, lo mantiene
  * del tamaño del contenedor, corre el bucle de animación y lo libera todo al desmontar.
@@ -41,12 +55,15 @@ export function useScene<T extends SceneController>(factory: () => T): {
     controller.attach(canvas);
     sceneRef.current = controller;
 
+    const baseFov = controller.camera.fov;
     const resize = () => {
       const w = host.clientWidth;
       const h = host.clientHeight;
       if (!w || !h) return;
       renderer.setSize(w, h);
-      controller.camera.aspect = w / h;
+      const aspect = w / h;
+      controller.camera.aspect = aspect;
+      controller.camera.fov = fitFov(baseFov, aspect);
       controller.camera.updateProjectionMatrix();
     };
     resize();

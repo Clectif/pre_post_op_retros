@@ -1,12 +1,8 @@
-import { cn } from "../../lib/utils";
-
 interface CameraToolsProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onReset: () => void;
   onNote: () => void;
-  /** Clase de posición vertical: cada vista tiene una barra inferior de distinta altura. */
-  className: string;
 }
 
 const TOOLS = [
@@ -16,17 +12,18 @@ const TOOLS = [
   { key: "note", label: "Nota del registro", icon: "✎" },
 ] as const;
 
-export function CameraTools({ onZoomIn, onZoomOut, onReset, onNote, className }: CameraToolsProps) {
+/** Botones de cámara sobre la escena. La posición la decide StageLayout. */
+export function CameraTools({ onZoomIn, onZoomOut, onReset, onNote }: CameraToolsProps) {
   const handlers = { in: onZoomIn, out: onZoomOut, reset: onReset, note: onNote };
   return (
-    <div className={cn("absolute left-4 flex gap-2", className)}>
+    <div className="flex gap-2">
       {TOOLS.map((t) => (
         <button
           key={t.key}
           type="button"
           aria-label={t.label}
           onClick={handlers[t.key]}
-          className="flex size-12 cursor-pointer items-center justify-center rounded-[14px] border border-line bg-panel text-[19px] text-ink shadow-pill active:bg-subtle"
+          className="flex size-12 cursor-pointer items-center justify-center rounded-[14px] border border-line bg-panel text-[19px] text-ink shadow-pill active:bg-subtle max-sm:size-11 max-sm:rounded-xl phone-h:size-11 phone-h:rounded-xl"
         >
           {t.icon}
         </button>

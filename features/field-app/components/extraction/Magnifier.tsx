@@ -34,7 +34,7 @@ export function Magnifier({ stage }: { stage: Stage }) {
       width={SIZE}
       height={SIZE}
       aria-hidden
-      className="mt-[13px] mb-1 block aspect-square max-h-[118px] w-full rounded-[14px] border border-line bg-[#faf7f1] short:max-h-[88px]"
+      className="mt-[13px] mb-1 block aspect-square max-h-[118px] w-full rounded-[14px] border border-line bg-[#faf7f1] short:max-h-[88px] max-sm:max-h-[80px] max-lg:short:hidden"
     />
   );
 }
